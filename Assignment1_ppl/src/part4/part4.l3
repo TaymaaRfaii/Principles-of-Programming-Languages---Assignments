@@ -1,0 +1,50 @@
+#lang racket/base
+; Signature: append(list1)(list2)
+; Type:[ List of T * List of T => List of T ]
+; Purpose: return a list which is the first list appended by the second list
+; Pre-conditions: list1 and list2 are lists
+; Tests: (append '(1 2) '(3 4)) -> '(1 2 3 4)
+
+(define append
+    (lambda (l1 l2)
+    (if (null? l1) l2 (cons (car l1) (append (cdr l1) l2)))
+))
+; Signature: reverse(list)
+; Type:[ List of T => List of T ]
+; Purpose: return a list which is the reversed version of the original list
+; Pre-conditions: list is a list
+; Tests: (append '(1 2 3 4)) -> '(4 3 2 1)
+
+(define reverse
+    (lambda (l)
+    (if (null? l) '() (append (reverse (cdr l)) (list (car l))))
+))
+; Signature: duplicate-items(list1)(list2)
+; Type:[ List of T * List of T => List of T ]
+; Purpose: return a list which has every element from list1 duplicated i times where i is the natural number
+; that has the same index of the element from list1 in list2
+; Pre-conditions: list1 and list2 are lists and list2 are natural numbers and is not empty
+; Tests:  (duplicate-items '(1 2 3) '(1 0)) -> '(1 3)
+;          (duplicate-items '(1 2 3) '(2 1 0 10 2)) -> '(1 1 2)
+
+(define duplicate-item-by-count
+    (lambda (item count)
+    (if (> count 0)
+        (cons item (duplicate-item-by-count item (- count 1)))
+        '()))
+    )
+(define duplicate-items-by-index
+    (lambda (lst dup-count original-dup-count)
+        (if (null? lst)
+            '()
+            (if (null? (cdr dup-count))
+                (append (duplicate-item-by-count (car lst) (car dup-count))
+                            (duplicate-items-by-index (cdr lst) original-dup-count original-dup-count))
+                (append (duplicate-item-by-count (car lst) (car dup-count))
+                            (duplicate-items-by-index (cdr lst) (cdr dup-count) original-dup-count))
+            )
+            )))
+(define duplicate-items
+    (lambda (lst dup-count)
+        (duplicate-items-by-index lst dup-count dup-count)
+))
